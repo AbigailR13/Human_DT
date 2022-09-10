@@ -8,7 +8,7 @@ function [percent_correct,physiological_states,qofm] = Human_DT(data)
     scale = '';
     
     % load ranges of scores and percent correct in those ranges (distribution of quality-of-output metric) 
-    load('qofm_distribution2326.mat',"distribution");
+    load(strcat('qofm_distribution',model_num,'.mat'),"distribution");
     score_opts = distribution(1,:);
     percent = distribution(2,:);
     max_range = score_opts(end);
