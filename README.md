@@ -5,7 +5,7 @@ Training data can be found in Training Data folder
 
 Testing data can be found in Testing Data folder
 
-get_SVM_model_script can be run to train an SVM model using the training data
+get_SVM_model_script can be run to train an SVM model using the training data (requires deep learning toolbox)
 
 get_qofm_distribution_script can be run to get a quality-of-output metric (prbobability that a physiological state was correctly classified) distribution using testing data
 
