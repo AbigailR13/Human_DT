@@ -82,6 +82,8 @@ function [MAV_avgs,MAV_time,EDA_avgs,EDA_avgs_time,port_avgs,port_avgs_time,HR_a
     end
     end_time = EMG_time(end);
       
+    low = EMG;
+    
     % Mean absolute value for EMG data
     step = 30;
     p = 1;
