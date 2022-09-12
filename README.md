@@ -1,7 +1,7 @@
 # Human_DT
 Human digital twin for  prediction physiological states
 
-***MAKE SURE THE MAIN FILE IS CALLED 'Human_DT'***
+***MAKE SURE THE MAIN FOLDER IS CALLED 'Human_DT'***
 
 ***PLEASE RUN add_all_files_to_path_script FIRST TO MAKE SURE ALL FILES ARE IN PATH***
 
