@@ -30,15 +30,21 @@ function [percent_correct,physiological_states,qofm] = Human_DT(data)
     % predict states for data from all testing trials
     for k = 1:size(data,2)
         % get prediction from model
-        [percent_correct_1,preds,classes,score] = DT_SVM_test_model(data{k},1,model_num,"1",scale);
+        [percent_correct_1,preds,classes,score_2] = DT_SVM_test_model(data{k},1,model_num,"1",scale);
         
+        score = zeros(size(score_2,1),1);
+
+        for i = 1:size(score_2)
+                score(i) = score_2(i,preds(i));
+        end
+
         % store scores
         scores_2 = [scores_2;score];
         % store physiological states
         physiological_states = [physiological_states;preds];
         percent_correct = percent_correct + percent_correct_1;
-        count = count + 1;
-        
+        count = count + 1;   
+     
         % separate scores for correctly and incorrectly labeled states
         for i = 1:size(classes,2)
             if abs(score(i,1)) >= max_range
@@ -49,7 +55,7 @@ function [percent_correct,physiological_states,qofm] = Human_DT(data)
                 end
             else
                 for j = 1:size(score_opts,2)
-                    if abs(score(i,1)) < (step * j)
+                    if abs(score(i,1)) < score_opts(j)
                         if preds(i) == classes(i)
                             scores_1 = [scores_1,abs(score(i,1))];
                         else
@@ -70,7 +76,7 @@ function [percent_correct,physiological_states,qofm] = Human_DT(data)
             incorrect(i) = percent(end); 
         else
             for j = 1:size(score_opts,2)
-                if abs(scores(i)) < (step * j)
+                if abs(scores(i)) < score_opts(j)
                     incorrect(i) = percent(j);
                     break
                 end
@@ -85,7 +91,7 @@ function [percent_correct,physiological_states,qofm] = Human_DT(data)
             correct_1(i) = percent(end); 
         else
             for j = 1:size(score_opts,2)
-                if abs(scores_1(i)) < (step * j)
+                if abs(scores_1(i)) < score_opts(j)
                     correct_1(i) = percent(j);
                     break
                 end
@@ -101,7 +107,7 @@ function [percent_correct,physiological_states,qofm] = Human_DT(data)
             qofm(i) = percent(end); 
         else
             for j = 1:size(score_opts,2)
-                if abs(scores_2(i)) < (step * j)
+                if abs(scores_2(i)) < score_opts(j)
                     qofm(i) = percent(j);
                     break
                 end
