@@ -71,8 +71,10 @@ function DT_SVM_get_model(test_nums_all)
     scale = '';
 
     % get SVM Model
-    SVMModel = fitcsvm(data,classes_con','KernelFunction','rbf',...
+    SVMModel_1 = fitcsvm(data,classes_con','KernelFunction','rbf',...
         'Standardize',true,'ClassNames',{'1','2'});
+
+    SVMModel = fitPosterior(SVMModel_1);
     
     % save model to .mat file
     save(strcat('SVM_test_',model_nums,'_model_',string(control),'_pemh',scale,'.mat'),'SVMModel');
