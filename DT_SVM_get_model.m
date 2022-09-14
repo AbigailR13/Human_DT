@@ -66,7 +66,6 @@ function DT_SVM_get_model(test_nums_all)
     % put all data for training in matrix (data)
     data = [port_avgs_con;EDA_avgs_con;MAD_slopes_con;HR_avgs_con]';
     
-    
     rng('default');
     scale = '';
 
