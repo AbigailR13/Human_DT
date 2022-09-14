@@ -10,7 +10,7 @@ function DT_SVM_get_model(test_nums_all)
     classes_con = [];
     
     % concatenate training data from all desired trials
-    for i = 1:test_nums_all
+    for i = 1:size(test_nums_all,2)
         test_nums = test_nums_all{i};
         model_num = test_nums(1);
         model_nums = model_nums + model_num;
@@ -20,11 +20,14 @@ function DT_SVM_get_model(test_nums_all)
         % remove control data: 2
         control = 1; 
         
+        % only a single trial
+        single = 1;
+        
         % include heart rate
         HR = 1;
         
         % load data from files and put in proper form
-        [MAD_slopes_all,MAD_slopes_times,EDA_avgs_all,EDA_avgs_times,port_avgs_all,port_avgs_times,HR_avgs_all,HR_avgs_times,phys_states,end_times,classes,end_time_control] = get_data(test_nums,HR,single);
+        [MAD_slopes_all,MAD_slopes_times,EDA_avgs_all,EDA_avgs_times,port_avgs_all,port_avgs_times,HR_avgs_all,HR_avgs_times,phys_states,end_times,classes,end_time_control] = DT_get_data(test_nums,HR,single);
         
         % make sure all data is the same length
         data_length = min([size(MAD_slopes_all,2), size(EDA_avgs_all,2),size(port_avgs_all,2)]);
@@ -46,10 +49,10 @@ function DT_SVM_get_model(test_nums_all)
         % deal with resting control period
         if control == 1
             % subtracting off resting control averages from all data
-            [MAD_slopes_all,EDA_avgs_all,port_avgs_all,HR_avgs_all,MAD_slopes_times,EDA_avgs_times,port_avgs_times,HR_avgs_times,classes] = control_avgs(MAD_slopes_all,MAD_slopes_times,EDA_avgs_all,EDA_avgs_times,port_avgs_all,port_avgs_times,HR_avgs_all,HR_avgs_times,end_time_control,HR,classes);
+            [MAD_slopes_all,EDA_avgs_all,port_avgs_all,HR_avgs_all,MAD_slopes_times,EDA_avgs_times,port_avgs_times,HR_avgs_times,classes] = DT_control_avgs(MAD_slopes_all,MAD_slopes_times,EDA_avgs_all,EDA_avgs_times,port_avgs_all,port_avgs_times,HR_avgs_all,HR_avgs_times,end_time_control,HR,classes);
         elseif control == 2
             % remove resting control period data
-            [MAD_slopes_all,EDA_avgs_all,port_avgs_all,HR_avgs_all,MAD_slopes_times,EDA_avgs_times,port_avgs_times,HR_avgs_times,classes] = remove_control(MAD_slopes_all,MAD_slopes_times,EDA_avgs_all,EDA_avgs_times,port_avgs_all,port_avgs_times,HR_avgs_all,HR_avgs_times,end_time_control,HR,classes);
+            [MAD_slopes_all,EDA_avgs_all,port_avgs_all,HR_avgs_all,MAD_slopes_times,EDA_avgs_times,port_avgs_times,HR_avgs_times,classes] = DT_remove_control(MAD_slopes_all,MAD_slopes_times,EDA_avgs_all,EDA_avgs_times,port_avgs_all,port_avgs_times,HR_avgs_all,HR_avgs_times,end_time_control,HR,classes);
         end
         
         % concatenate data
@@ -68,55 +71,12 @@ function DT_SVM_get_model(test_nums_all)
     scale = '';
 
     % get SVM Model
-    SVMModel = fitcsvm(data,classes','KernelFunction','rbf',...
+    SVMModel_1 = fitcsvm(data,classes_con','KernelFunction','rbf',...
         'Standardize',true,'ClassNames',{'1','2'});
+
+    SVMModel = fitPosterior(SVMModel_1);
     
     % save model to .mat file
-    save(strcat('SVM_test_',model_num,'_model_',string(control),'_pemh_',scale,'.mat'),'SVMModel');
+    save(strcat('SVM_test_',model_nums,'_model_',string(control),'_pemh',scale,'.mat'),'SVMModel');
     
-    % test model on training data
-    [label,score] = predict(SVMModel,data);
-    
-    preds = zeros(size(label));
-    for i = 1:size(label)
-        preds(i) = str2double(label{i});
-    end
-    
-    % get percent data correcly classified of training data
-    num_incorrect = sum(preds == classes');
-    total = size(preds,1);
-    percent_correct_1 = 1-(num_incorrect)/total;
-    percent_correct_2 = (num_incorrect)/total;
-    percent_correct = max(percent_correct_2,percent_correct_1)
-
-
-    % test model on training data
-    [label,score] = predict(SVMModel,data_1);
-    
-    preds = zeros(size(label));
-    for i = 1:size(label)
-        preds(i) = str2double(label{i});
-    end
-    
-    % get percent data correcly classified of training data
-    num_incorrect = sum(preds == classes_10');
-    total = size(preds,1);
-    percent_correct_1 = 1-(num_incorrect)/total;
-    percent_correct_2 = (num_incorrect)/total;
-    percent_correct = max(percent_correct_2,percent_correct_1)
-
-    % test model on training data
-    [label,score] = predict(SVMModel,data_2);
-    
-    preds = zeros(size(label));
-    for i = 1:size(label)
-        preds(i) = str2double(label{i});
-    end
-    
-    % get percent data correcly classified of training data
-    num_incorrect = sum(preds == classes_20');
-    total = size(preds,1);
-    percent_correct_1 = 1-(num_incorrect)/total;
-    percent_correct_2 = (num_incorrect)/total;
-    percent_correct = max(percent_correct_2,percent_correct_1)
 end
