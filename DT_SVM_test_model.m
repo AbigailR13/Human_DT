@@ -44,6 +44,7 @@ function [percent_correct,preds,classes,score] = DT_SVM_test_model(test_nums,con
     % predict states and get scores
     [label,score] = predict(SVMModel,data);
     
+    
     % make labels doubles
     preds = zeros(size(label));
     for i = 1:size(label)
