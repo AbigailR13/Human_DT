@@ -3,12 +3,11 @@
 close all
 clear
 
-% trials for testing data
-data{1} = ["24"];
-data{2} = ["25"];
+% file where testing data matrix is stored
+file_name = 'DT_testing_data.mat';
 
 % input data into human DT
-[percent_correct,physiological_states,qofo] = Human_DT(data);
+[percent_correct,physiological_states,qofo] = Human_DT(file_name);
 
 percent_correct
 
